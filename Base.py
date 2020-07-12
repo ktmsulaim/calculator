@@ -10,23 +10,60 @@ var = ""
 current = ""
 data = StringVar()
 operator = ""
+result = 0
+
+# Set default value of calculator to 0
+var = "0"
+data.set(var)
 
 
 def concatenate_values(val):
     global var
     global operator
+    global current
 
-    var = var + val
-    data.set(var)
+# Prevent entering multiple zero and operators only
+    if val == '0' and not var or val == '0' and var == '0':
+        var = '0'
+        data.set(var)
+    elif val != '0' and var == '0':
+        var = val
+        data.set(var)
+    else:
+        var = var + val
+        data.set(var)
+
+
 # if entered value is an operator set to operator variable
     if val == '+' or val == '-' or val == '*' or val == "/":
         operator = val
+# Remove leading zero after pressing operator
+        if operator:
+            val = val.strip('0')
+            var = var + val
+            data.set(var)
+
+    else:
+        operator = ''
+
+
+def calculate():
+    global var
+    global result
+
+    if var:
+        try:
+            result = eval(var)
+            data.set(result)
+        except ZeroDivisionError:
+            data.set("Math error!")
+            var = '0'
 
 
 def clear_window():
     global var
     global operator
-    var = ""
+    var = "0"
     operator = ""
     data.set(var)
 
@@ -123,7 +160,7 @@ btn11 = Button(button_row_3, text="3", bg="#222", fg="#f5f5f5", activebackground
 btn11.pack(side=LEFT, expand=True, fill="both")
 
 btn12 = Button(button_row_3, text="x", bg="#5f4bb6", fg="#f5f5f5", activebackground="#666", relief=FLAT,
-               font=button_font, bd=0, width=3, command=lambda: concatenate_values("x"))
+               font=button_font, bd=0, width=3, command=lambda: concatenate_values("*"))
 btn12.pack(side=LEFT, expand=True, fill="both")
 
 # 4th row - contains (C | 0 | / | =)
@@ -139,11 +176,11 @@ btn14 = Button(button_row_4, text="0", bg="#222", fg="#f5f5f5", activebackground
 btn14.pack(side=LEFT, expand=True, fill="both")
 
 btn15 = Button(button_row_4, text="/", bg="#222", fg="#f5f5f5", activebackground="#666", relief=FLAT,
-               font=button_font, bd=0, width=2)
+               font=button_font, bd=0, width=2, command=lambda: concatenate_values("/"))
 btn15.pack(side=LEFT, expand=True, fill="both")
 
 btn16 = Button(button_row_4, text="=", bg="#ffc207", fg="#222", activebackground="#666", relief=FLAT,
-               font=button_font, bd=0, width=3)
+               font=button_font, bd=0, width=3, command=calculate)
 btn16.pack(side=LEFT, expand=True, fill="both")
 
 # Run application
